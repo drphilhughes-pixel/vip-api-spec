@@ -1,0 +1,5 @@
+{
+  "grant_id": "grant-123",
+  "download_url": "https://example.com/signed-url",
+  "expires_at": "2099-01-01T00:00:00Z"
+}

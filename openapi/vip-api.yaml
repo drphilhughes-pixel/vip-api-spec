@@ -1,0 +1,80 @@
+openapi: 3.0.3
+info: { title: VIP API, version: "1.0.0" }
+servers: [{ url: https://api.vip.example.com }]
+security: [{ bearerAuth: [] }]
+paths:
+  /v1/search:
+    get:
+      summary: Hybrid search (keyword + AI prompt)
+      parameters:
+        - in: query
+          name: q
+          schema: { type: string }
+        - in: query
+          name: prompt
+          schema: { type: string }
+        - in: query
+          name: page_size
+          schema: { type: integer, default: 24, minimum: 1, maximum: 200 }
+        - in: query
+          name: page_token
+          schema: { type: string }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  results:
+                    type: array
+                    items:
+                      type: object
+                      properties:
+                        asset_id: { type: string }
+                        title: { type: string }
+                        preview_url: { type: string }
+                        score: { type: number }
+                  page_token_next: { type: string, nullable: true }
+  /v1/assets/{asset_id}:
+    get:
+      summary: Get asset metadata
+      parameters:
+        - in: path
+          name: asset_id
+          required: true
+          schema: { type: string }
+      responses:
+        '200': { description: OK }
+        '404': { description: Not Found }
+  /v1/downloads:
+    post:
+      summary: Request a signed download URL
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required: [asset_id, rendition]
+              properties:
+                asset_id: { type: string }
+                rendition: { type: string, enum: [original, large, medium, thumb] }
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  grant_id: { type: string }
+                  download_url: { type: string }
+                  expires_at: { type: string, format: date-time }
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

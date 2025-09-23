@@ -1,0 +1,11 @@
+{
+  "results": [
+    {
+      "asset_id": "a1",
+      "title": "River at dusk",
+      "preview_url": "https://example.com/preview/a1",
+      "score": 0.91
+    }
+  ],
+  "page_token_next": null
+}
