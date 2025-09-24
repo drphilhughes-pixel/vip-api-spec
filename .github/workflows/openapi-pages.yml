@@ -1,0 +1,38 @@
+name: Publish Swagger UI
+on:
+  push:
+    branches: [ main ]
+    paths: ['openapi/**']
+  workflow_dispatch:
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: |
+          curl -L -o swagger-ui.zip https://github.com/swagger-api/swagger-ui/archive/refs/heads/master.zip
+          unzip -q swagger-ui.zip
+          mkdir -p site
+          cp -r swagger-ui-master/dist/* site/
+          cat > site/swagger-initializer.js <<'JS'
+          window.onload = () => {
+            window.ui = SwaggerUIBundle({
+              url: "./vip-api.yaml",
+              dom_id: '#swagger-ui',
+            });
+          };
+          JS
+          cp openapi/vip-api.yaml site/vip-api.yaml
+      - uses: actions/upload-pages-artifact@v3
+        with: { path: site }
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment: { name: github-pages }
+    steps:
+      - id: deployment
+        uses: actions/deploy-pages@v4

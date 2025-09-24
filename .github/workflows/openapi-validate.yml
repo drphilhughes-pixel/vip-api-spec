@@ -1,0 +1,12 @@
+name: OpenAPI Validate
+on:
+  pull_request:
+  push:
+    paths: ['openapi/**']
+jobs:
+  validate:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm i -g @apidevtools/swagger-cli
+      - run: swagger-cli validate openapi/vip-api.yaml
